@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Friendship Quiz</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fffaf3, #e8d8c3);
+            color: #4b3425;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: 0.4s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 25px;
+            padding: 35px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(75,52,37,0.18);
+        }
+
+        h1 {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 25px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 17px;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #d6bfa5;
+            border-radius: 14px;
+            font-size: 17px;
+            text-align: center;
+            outline: none;
+            margin-bottom: 15px;
+        }
+
+        input:focus {
+            border-color: #8b5e3c;
+        }
+
+        button {
+            border: none;
+            padding: 14px 28px;
+            border-radius: 14px;
+            background: #8b5e3c;
+            color: white;
+            font-size: 17px;
+            cursor: pointer;
+            transition: 0.25s;
+            margin: 6px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            opacity: 0.9;
+        }
+
+        .secondary {
+            background: #d8c2a8;
+            color: #4b3425;
+        }
+
+        .question {
+            font-size: 23px;
+            font-weight: bold;
+            margin: 25px 0;
+        }
+
+        .answers {
+            display: grid;
+            gap: 12px;
+        }
+
+        .answer {
+            width: 100%;
+            background: #f4eadf;
+            color: #4b3425;
+            border: 2px solid transparent;
+        }
+
+        .answer:hover {
+            background: #ead8c5;
+        }
+
+        .answer.selected {
+            border-color: #8b5e3c;
+            background: #ddc1a4;
+        }
+
+        .progress {
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .score {
+            font-size: 50px;
+            font-weight: bold;
+            margin: 20px;
+        }
+
+        .color-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        .color-section p {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .color-buttons button {
+            width: 35px;
+            height: 35px;
+            padding: 0;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 1px #aaa;
+        }
+
+        .brown { background: #8b5e3c; }
+        .beige { background: #d8c2a8; }
+        .white { background: #ffffff; }
+        .pink { background: #d99aaa; }
+        .blue { background: #7fa7c9; }
+        .green { background: #8caf8c; }
+
+        .small {
+            font-size: 13px;
+            opacity: 0.6;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- START -->
+    <div id="startScreen" class="screen active">
+
+        <h1>Friendship Quiz</h1>
+
+        <p>
+            هل تعرف صديقك حقًا؟
+            <br>
+            Let's find out!
+        </p>
+
+        <button onclick="showNameScreen()">
+            Start
+        </button>
+
+        <div class="color-section">
+            <p>Choose your color</p>
+
+            <div class="color-buttons">
+                <button class="brown" onclick="changeTheme('#8b5e3c','#fffaf3')"></button>
+                <button class="beige" onclick="changeTheme('#a47b55','#f4eadf')"></button>
+                <button class="white" onclick="changeTheme('#555555','#ffffff')"></button>
+                <button class="pink" onclick="changeTheme('#a95870','#fff0f4')"></button>
+                <button class="blue" onclick="changeTheme('#557d9b','#edf6ff')"></button>
+                <button class="green" onclick="changeTheme('#5d805d','#eff8ef')"></button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- NAME -->
+    <div id="nameScreen" class="screen">
+
+        <h2>Your Name</h2>
+
+        <p>
+            اكتب اسمك قبل أن تبدأ الاختبار.
+        </p>
+
+        <input
+            type="text"
+            id="playerName"
+            placeholder="Enter your name"
+        >
+
+        <button onclick="startQuiz()">
+            Continue
+        </button>
+
+    </div>
+
+
+    <!-- QUIZ -->
+    <div id="quizScreen" class="screen">
+
+        <h2 id="quizTitle">
+            Let's see if you know...
+        </h2>
+
+        <p id="senderText"></p>
+
+        <div class="question" id="questionText"></div>
+
+        <div class="answers" id="answersContainer"></div>
+
+        <button id="nextButton" onclick="nextQuestion()" style="display:none;">
+            Next
+        </button>
+
+        <div class="progress" id="progressText"></div>
+
+    </div>
+
+
+    <!-- RESULT -->
+    <div id="resultScreen" class="screen">
+
+        <h2>Your Result</h2>
+
+        <p id="resultMessage"></p>
+
+        <div class="score" id="scoreText"></div>
+
+        <p id="resultDetails"></p>
+
+        <button onclick="location.reload()">
+            Try Again
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /*
+    ==========================================
+    FRIENDSHIP QUIZ SETTINGS
+    ==========================================
+
+    يمكنك تغيير الأسئلة من هنا.
+    correct = رقم الإجابة الصحيحة
+    يبدأ العد من 0
+
+    مثال:
+    0 = أول إجابة
+    1 = ثاني إجابة
+    2 = ثالث إجابة
+    3 = رابع إجابة
+    */
+
+    const questions = [
+
+        {
+            question: "ما هو لوني المفضل؟",
+            answers: [
+                "Black",
+                "Brown",
+                "Pink",
+                "Blue"
+            ],
+            correct: 1
+        },
+
+        {
+            question: "ما أكثر شيء أحب فعله؟",
+            answers: [
+                "Gaming",
+                "Reading",
+                "Sleeping",
+                "Watching movies"
+            ],
+            correct: 0
+        },
+
+        {
+            question: "ما الشيء الذي يزعجني أكثر؟",
+            answers: [
+                "Being ignored",
+                "Rain",
+                "Food",
+                "Music"
+            ],
+            correct: 0
+        },
+
+        {
+            question: "ما نوع الأفلام الذي أفضل؟",
+            answers: [
+                "Horror",
+                "Comedy",
+                "Romance",
+                "Action"
+            ],
+            correct: 0
+        },
+
+        {
+            question: "من يعرف الآخر أكثر؟ 👀",
+            answers: [
+                "Me",
+                "You",
+                "Nobody",
+                "We will see..."
+            ],
+            correct: 3
+        }
+
+    ];
+
+
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedAnswer = null;
+
+
+    /*
+    الحصول على اسم الشخص الذي أرسل الرابط
+
+    مثال الرابط:
+    ?from=Raky
+
+    */
+
+    const urlParams = new URLSearchParams(window.location.search);
+
+    let senderName = urlParams.get("from");
+
+    if (!senderName) {
+        senderName = "Your Friend";
+    }
+
+
+    function showScreen(id) {
+
+        document.querySelectorAll(".screen").forEach(screen => {
+            screen.classList.remove("active");
+        });
+
+        document.getElementById(id).classList.add("active");
+    }
+
+
+    function showNameScreen() {
+
+        showScreen("nameScreen");
+
+    }
+
+
+    function startQuiz() {
+
+        const name = document.getElementById("playerName").value.trim();
+
+        if (name === "") {
+
+            alert("Please enter your name.");
+
+            return;
+        }
+
+        currentQuestion = 0;
+        score = 0;
+
+        document.getElementById("senderText").innerHTML =
+            `Let's see if you know <strong>${escapeHTML(senderName)}</strong> or not 👀`;
+
+        showScreen("quizScreen");
+
+        loadQuestion();
+
+    }
+
+
+    function loadQuestion() {
+
+        const q = questions[currentQuestion];
+
+        selectedAnswer = null;
+
+        document.getElementById("questionText").textContent =
+            q.question;
+
+        document.getElementById("progressText").textContent =
+            `Question ${currentQuestion + 1} / ${questions.length}`;
+
+        const container =
+            document.getElementById("answersContainer");
+
+        container.innerHTML = "";
+
+        q.answers.forEach((answer, index) => {
+
+            const button = document.createElement("button");
+
+            button.className = "answer";
+
+            button.textContent = answer;
+
+            button.onclick = function () {
+
+                selectAnswer(index, button);
+
+            };
+
+            container.appendChild(button);
+
+        });
+
+        document.getElementById("nextButton").style.display = "none";
+
+    }
+
+
+    function selectAnswer(index, button) {
+
+        selectedAnswer = index;
+
+        document.querySelectorAll(".answer").forEach(btn => {
+            btn.classList.remove("selected");
+        });
+
+        button.classList.add("selected");
+
+        document.getElementById("nextButton").style.display =
+            "inline-block";
+
+    }
+
+
+    function nextQuestion() {
+
+        if (selectedAnswer === null) {
+            return;
+        }
+
+        if (selectedAnswer === questions[currentQuestion].correct) {
+            score++;
+        }
+
+        currentQuestion++;
+
+        if (currentQuestion < questions.length) {
+
+            loadQuestion();
+
+        } else {
+
+            showResult();
+
+        }
+
+    }
+
+
+    function showResult() {
+
+        showScreen("resultScreen");
+
+        const percentage =
+            Math.round((score / questions.length) * 100);
+
+        document.getElementById("scoreText").textContent =
+            `${score} / ${questions.length}`;
+
+        document.getElementById("resultDetails").textContent =
+            `${percentage}% correct`;
+
+        let message = "";
+
+        if (percentage === 100) {
+
+            message =
+                "Perfect! You really know your friend! 🏆";
+
+        } else if (percentage >= 70) {
+
+            message =
+                "Pretty good! You know them quite well. 👀";
+
+        } else if (percentage >= 40) {
+
+            message =
+                "Not bad... but you still have things to discover. 😭";
+
+        } else {
+
+            message =
+                "Do you even know your friend? 😭";
+
+        }
+
+        document.getElementById("resultMessage").textContent =
+            message;
+
+    }
+
+
+    function changeTheme(mainColor, backgroundColor) {
+
+        document.documentElement.style.setProperty(
+            "--mainColor",
+            mainColor
+        );
+
+        document.body.style.background =
+            `linear-gradient(135deg, ${backgroundColor}, #e8d8c3)`;
+
+        document.querySelectorAll("button").forEach(button => {
+
+            if (!button.classList.contains("color-buttons")) {
+
+                if (!button.classList.contains("answer") &&
+                    !button.classList.contains("secondary")) {
+
+                    button.style.background = mainColor;
+
+                }
+
+            }
+
+        });
+
+    }
+
+
+    function escapeHTML(text) {
+
+        const div = document.createElement("div");
+
+        div.textContent = text;
+
+        return div.innerHTML;
+
+    }
+
+</script>
+
+</body>
+</html>
